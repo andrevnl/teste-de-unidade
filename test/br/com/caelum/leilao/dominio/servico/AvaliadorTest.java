@@ -125,15 +125,43 @@ public class AvaliadorTest {
 
         leilao.propoe(instanciaLance(joao, 100.0));
         leilao.propoe(instanciaLance(maria, 200.0));
-        leilao.propoe(instanciaLance(joao, 300.0));
-        leilao.propoe(instanciaLance(maria, 400.0));
+        leilao.propoe(instanciaLance(jose, 300.0));
+        leilao.propoe(instanciaLance(joao, 400.0));
+        leilao.propoe(instanciaLance(maria, 500.0));
+        leilao.propoe(instanciaLance(jose, 600.0));
 
         getAvalia(leilao);
 
         List<Lance> maiores = leiloeiro.getTresMaiores();
         assertEquals(3, maiores.size());
-        assertEquals(400.0, maiores.get(0).getValor(), 0.00001);
-        assertEquals(300.0, maiores.get(1).getValor(), 0.00001);
-        assertEquals(200.0, maiores.get(2).getValor(), 0.00001);
+        assertEquals(600.0, maiores.get(0).getValor(), 0.00001);
+        assertEquals(500.0, maiores.get(1).getValor(), 0.00001);
+        assertEquals(400.0, maiores.get(2).getValor(), 0.00001);
+    }
+
+    @Test
+    public void deveRetornarOsDoisMaioresLances() {
+        mockarTresUsuarios();
+        mockarUmItemLeilao();
+
+        leilao.propoe(instanciaLance(joao, 100.0));
+        leilao.propoe(instanciaLance(maria, 200.0));
+
+        getAvalia(leilao);
+
+        List<Lance> maiores = leiloeiro.getTresMaiores();
+        assertEquals(2, maiores.size());
+        assertEquals(200.0, maiores.get(0).getValor(), 0.00001);
+        assertEquals(100.0, maiores.get(1).getValor(), 0.00001);
+    }
+
+    @Test
+    public void deveRetornarListaVaziaPoisNaoFoiDadoLances() {
+        mockarUmItemLeilao();
+
+        getAvalia(leilao);
+
+        List<Lance> maiores = leiloeiro.getTresMaiores();
+        assertEquals(0, maiores.size());
     }
 }
