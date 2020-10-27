@@ -1,8 +1,11 @@
 package br.com.caelum.leilao.dominio.servico;
 
+import br.com.caelum.leilao.builder.CriadorDeLeilao;
 import br.com.caelum.leilao.dominio.Avaliador;
 import br.com.caelum.leilao.dominio.Lance;
 import br.com.caelum.leilao.dominio.Usuario;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -17,6 +20,18 @@ public class AvaliadorTest {
     private Leilao leilao;
     private Avaliador leiloeiro;
 
+    @Before
+    public void setup() {
+        mockarUmItemLeilao();
+        mockarTresUsuarios();
+        mockarAvaliador();
+    }
+
+    @After
+    public void finaliza() {
+        System.out.println("fim");
+    }
+
     private Usuario instanciaUsuario(String nome) {
         return new Usuario(nome);
     }
@@ -27,10 +42,6 @@ public class AvaliadorTest {
 
     private Leilao instanciaItemLeilao(String item) {
         return new Leilao(item);
-    }
-
-    private void mockarUmUsuario() {
-        joao = instanciaUsuario("João");
     }
 
     private void mockarTresUsuarios() {
@@ -44,17 +55,16 @@ public class AvaliadorTest {
     }
 
     private Avaliador getAvalia(Leilao leilao) {
-        leiloeiro = new Avaliador();
         leiloeiro.avalia(leilao);
         return leiloeiro;
     }
 
+    private void mockarAvaliador() {
+        leiloeiro = new Avaliador();
+    }
+
     @Test
     public void deveEntenderLancesEmModoCrescente() {
-        // parte 1: cenario
-        mockarTresUsuarios();
-        mockarUmItemLeilao();
-
         leilao.propoe(instanciaLance(joao, 300.0));
         leilao.propoe(instanciaLance(jose, 400.0));
         leilao.propoe(instanciaLance(maria, 250.0));
@@ -71,10 +81,6 @@ public class AvaliadorTest {
 
     @Test
     public void deveCalcularAMedia() {
-        // cenario: 3 lances em ordem crescente
-        mockarTresUsuarios();
-        mockarUmItemLeilao();
-
         leilao.propoe(instanciaLance(maria, 300.0));
         leilao.propoe(instanciaLance(joao, 400.0));
         leilao.propoe(instanciaLance(jose, 500.0));
@@ -89,10 +95,6 @@ public class AvaliadorTest {
 
     @Test
     public void testaMediaDeZeroLance(){
-        // cenario
-        mockarUmUsuario();
-        mockarUmItemLeilao();
-
         // acao
         getAvalia(leilao);
 
@@ -102,10 +104,6 @@ public class AvaliadorTest {
 
     @Test
     public void deveEntenderLeilaoComApenasUmLance() {
-        // parte 1: cenario
-        mockarUmUsuario();
-        mockarUmItemLeilao();
-
         leilao.propoe(instanciaLance(joao, 1000.0));
 
         // parte 2: acao
@@ -120,15 +118,14 @@ public class AvaliadorTest {
 
     @Test
     public void deveEncontrarOsTresMaioresLances() {
-        mockarTresUsuarios();
-        mockarUmItemLeilao();
-
-        leilao.propoe(instanciaLance(joao, 100.0));
-        leilao.propoe(instanciaLance(maria, 200.0));
-        leilao.propoe(instanciaLance(jose, 300.0));
-        leilao.propoe(instanciaLance(joao, 400.0));
-        leilao.propoe(instanciaLance(maria, 500.0));
-        leilao.propoe(instanciaLance(jose, 600.0));
+        leilao = new CriadorDeLeilao().para("Playstantion 3")
+                .lance(joao, 100.0)
+                .lance(maria, 200.0)
+                .lance(jose, 300.0)
+                .lance(joao, 400.0)
+                .lance(maria, 500.0)
+                .lance(jose, 600.0)
+                .constroi();
 
         getAvalia(leilao);
 
@@ -141,9 +138,6 @@ public class AvaliadorTest {
 
     @Test
     public void deveRetornarOsDoisMaioresLances() {
-        mockarTresUsuarios();
-        mockarUmItemLeilao();
-
         leilao.propoe(instanciaLance(joao, 100.0));
         leilao.propoe(instanciaLance(maria, 200.0));
 
@@ -157,8 +151,6 @@ public class AvaliadorTest {
 
     @Test
     public void deveRetornarListaVaziaPoisNaoFoiDadoLances() {
-        mockarUmItemLeilao();
-
         getAvalia(leilao);
 
         List<Lance> maiores = leiloeiro.getTresMaiores();
