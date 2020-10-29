@@ -4,7 +4,6 @@ import br.com.caelum.leilao.dominio.servico.Leilao;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class Avaliador {
@@ -15,6 +14,11 @@ public class Avaliador {
     private List<Lance> maiores;
 
     public void avalia(Leilao leilao) {
+
+        if(leilao.getLances().size() == 0) {
+            throw new RuntimeException("Não é possivel avaliar um leilão sem lances!");
+        }
+
         double total = 0;
         for(Lance lance : leilao.getLances()) {
             if (lance.getValor() > maiorDeTodos) maiorDeTodos = lance.getValor();
@@ -27,12 +31,8 @@ public class Avaliador {
 
     private void getMaiores(Leilao leilao) {
         maiores = new ArrayList<>(leilao.getLances());
-        Collections.sort(maiores, (o1, o2) -> {
-            if(o1.getValor() < o2.getValor()) return 1;
-            if(o1.getValor() > o2.getValor()) return -1;
-            return 0;
-        });
-        maiores = maiores.subList(0, maiores.size() > 3 ? 3 : maiores.size());
+        maiores.sort((o1, o2) -> Double.compare(o2.getValor(), o1.getValor()));
+        maiores = maiores.subList(0, Math.min(maiores.size(), 3));
     }
 
     private void calculaMedia(Leilao leilao, double total) {
